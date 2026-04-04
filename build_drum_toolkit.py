@@ -117,6 +117,11 @@ def make_midi(filename, notes, subfolder, bars=2, time_sig=(4, 4), bpm=DEFAULT_B
                                        time=delta, channel=9))
         prev_time = abs_time
 
+    # Pad to exact bar boundary so DAWs import at correct length
+    total_ticks = bars * bar_len
+    if prev_time < total_ticks:
+        track.append(mido.MetaMessage('end_of_track', time=total_ticks - prev_time))
+
     outdir = os.path.join(OUT_BASE, subfolder)
     os.makedirs(outdir, exist_ok=True)
     filepath = os.path.join(outdir, filename + ".mid")
@@ -156,6 +161,13 @@ def make_midi_absolute(filename, events_abs, subfolder, bpm=DEFAULT_BPM, time_si
             track.append(mido.Message('note_off', note=pitch, velocity=0,
                                        time=delta, channel=9))
         prev_time = abs_time
+
+    # Pad to next bar boundary so DAWs import at correct length
+    bar_len = TPQN * time_sig[0] * (4 // time_sig[1])
+    last_tick = events[-1][0] if events else 0
+    end_bar = ((last_tick // bar_len) + 1) * bar_len
+    if prev_time < end_bar:
+        track.append(mido.MetaMessage('end_of_track', time=end_bar - prev_time))
 
     outdir = os.path.join(OUT_BASE, subfolder)
     os.makedirs(outdir, exist_ok=True)
