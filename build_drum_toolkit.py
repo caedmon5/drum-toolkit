@@ -348,6 +348,25 @@ def build_hihat_patterns():
         notes.append((i * BEAT, RIDE, V_MED, DUR_SHORT))
     patterns.append(("pattern_ride_quarters", notes))
 
+    # 11. Jazz triplet 8ths closed — all three partials per beat, even velocity
+    #     The workhorse jazz hi-hat comping pattern: tss-tss-tss tss-tss-tss
+    notes = []
+    for beat in range(4):
+        for trip in range(3):
+            notes.append((beat * BEAT + trip * TRIPLET_8TH,
+                          HIHAT_CLOSED, V_MED, DUR_SHORT))
+    patterns.append(("pattern_jazz_triplet_8ths", notes))
+
+    # 12. Jazz triplet 8ths closed — accented downbeats for a more driving feel
+    #     Downbeats at V_MED, interior triplets at V_GHOST
+    notes = []
+    for beat in range(4):
+        for trip in range(3):
+            vel = V_MED if trip == 0 else V_GHOST
+            notes.append((beat * BEAT + trip * TRIPLET_8TH,
+                          HIHAT_CLOSED, vel, DUR_SHORT))
+    patterns.append(("pattern_jazz_triplet_8ths_accented", notes))
+
     return patterns
 
 
